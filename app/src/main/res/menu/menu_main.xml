@@ -1,0 +1,26 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.jamarfal.instagramndk.MainActivity">
+
+    <item
+        android:id="@+id/action_grey_photo"
+        android:orderInCategory="100"
+        android:title="Conversión a Gris"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_sepia_photo"
+        android:orderInCategory="101"
+        android:title="Conversión a Sepia"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_frame_photo"
+        android:orderInCategory="102"
+        android:title="Añade Marco" />
+
+    <item
+        android:id="@+id/action_sobel_photo"
+        android:orderInCategory="103"
+        android:title="Sobel" />
+</menu>
