@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,9 +33,8 @@ public class ShareDialogActivity extends AppCompatActivity {
     private Button boton2;
     private Button boton3;
     private Button boton1;
-    private TextView textoEntrada1;
-    private TextView textoSalida1;
     private Bitmap bitmapToUpload;
+    private ImageView imageView;
     //
 // gestiona los callbacks al FacebookSdk desde el método onActivityResult() de una actividad
     //
@@ -54,8 +54,7 @@ public class ShareDialogActivity extends AppCompatActivity {
         boton1 = (Button) findViewById(R.id.button1);
         boton2 = (Button) findViewById(R.id.button2);
         boton3 = (Button) findViewById(R.id.button3);
-        textoEntrada1 = (TextView) findViewById(R.id.textoEntrada1);
-        textoSalida1 = (TextView) findViewById(R.id.textoSalida1);
+        imageView = (ImageView) findViewById(R.id.imageview_sharedialog);
     } // ()
 
     // ------------------------------------------------------------
@@ -63,30 +62,18 @@ public class ShareDialogActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        //
-// inicializar super
-//
         super.onCreate(savedInstanceState);
-//
         Log.d("cuandrav.onCreate()", " .onCreate() llamado");
-//
-//
-// inicializar FacebookSDK
-//
+
         FacebookSdk.sdkInitialize(this.getApplicationContext());
-//
-// pongo el contenido visual de la actividad (hacer antes que findViewById ()
-// y después de inicializar FacebookSDK)
-//
+
         this.setContentView(R.layout.activity_share_dialog);
+
         conseguirReferenciasAElementosGraficos();
-//
-// crear callback manager de Facebook
-//
+
+
         this.elCallbackManagerDeFacebook = CallbackManager.Factory.create();
-//
-// crear objeto share dialog
-//
+
         this.elShareDialog = new ShareDialog(this);
         this.elShareDialog.registerCallback(this.elCallbackManagerDeFacebook, new
                 FacebookCallback<Sharer.Result>() {
@@ -106,11 +93,16 @@ public class ShareDialogActivity extends AppCompatActivity {
                     }
                 });
 
-        bitmapToUpload = BaseApplication.get().getBitmapToShare();
     }
 
-    // ------------------------------------------------------------
-// ------------------------------------------------------------
+    @Override
+    protected void onStart() {
+        super.onStart();
+        bitmapToUpload = BaseApplication.get().getBitmapToShare();
+
+        imageView.setImageBitmap(bitmapToUpload);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -118,80 +110,56 @@ public class ShareDialogActivity extends AppCompatActivity {
                 data);
     }
 
-    // ------------------------------------------------------------
-// ------------------------------------------------------------
+
     private void publicarMensajeConIntent() {
         Intent shareIntent = new Intent();
         shareIntent.setAction(Intent.ACTION_SEND);
         startActivityForResult(Intent.createChooser(shareIntent, "Share"), 1234);
-//requestId);
-    } //
+    }
 
-    // ------------------------------------------------------------
-// ------------------------------------------------------------
     public void boton1_pulsado(View quien) {
         Log.d("cuandrav.boton1_pulsado", " llamado ");
-        textoSalida1.setText("boton1_pulsado");
         this.publicarMensajeConIntent();
-    } // ()
+    }
 
-    // ------------------------------------------------------------
-// ------------------------------------------------------------
     private boolean puedoUtilizarShareDialogParaPublicarMensaje() {
         return puedoUtilizarShareDialogParaPublicarLink();
     }
 
-    // ------------------------------------------------------------
+
     private boolean puedoUtilizarShareDialogParaPublicarLink() {
         return ShareDialog.canShow(ShareLinkContent.class);
-    } // ()
+    }
 
-    // ------------------------------------------------------------
-// ------------------------------------------------------------
     private boolean puedoUtilizarShareDialogParaPublicarFoto() {
         return ShareDialog.canShow(SharePhotoContent.class);
-    } // ()
+    }
 
-    // ------------------------------------------------------------
-// ------------------------------------------------------------
     public void boton2_pulsado(View quien) {
         Log.d("cuandrav.boton2_pulsado", " llamado ");
-        textoSalida1.setText("boton2_pulsado");
-//
-// llamar al metodo para publicar
-//
-        this.publicarMensajeConShareDialog();
-    } // ()
 
-    // ------------------------------------------------------------
-// ------------------------------------------------------------
+        this.publicarMensajeConShareDialog();
+    }
+
     private void publicarMensajeConShareDialog() {
 // https://developers.facebook.com/docs/android/share -> Using the ShareDialogActivity
         if (!puedoUtilizarShareDialogParaPublicarMensaje()) {
             Log.d("cuandrav.boton2_pul()", " ¡¡¡ No puedo utilizar share dialog !!!");
             return;
         }
-        //
-// llamar a share dialog
-// aunque utilizamos ShareLinkContent, al no poner link
-// publica un mensaje
-//
+
         ShareLinkContent content = new ShareLinkContent.Builder().build();
         this.elShareDialog.show(content);
-    } // ()
+    }
 
-    // ------------------------------------------------------------
+
     public void boton3_pulsado(View quien) {
         Log.d("cuandrav.boton3_pulsado", " llamado ");
-        textoSalida1.setText("boton3_pulsado");
-//
-// llamar al metodo para publicar foto
-//
-        this.publicarFotoConShareDialog();
-    } // ()
 
-    // ------------------------------------------------------------
-// ------------------------------------------------------------
+        this.publicarFotoConShareDialog();
+    }
+
+
     private void publicarFotoConShareDialog() {
 // https://developers.facebook.com/docs/android/share -> Using the ShareDialogActivity
         if (!puedoUtilizarShareDialogParaPublicarFoto()) {

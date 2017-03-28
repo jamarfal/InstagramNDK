@@ -135,8 +135,6 @@ public class MainActivity extends AppCompatActivity {
                 //stream.close();
                 //bitmap.recycle();
 
-                Bitmap bitmapToShare = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
-                BaseApplication.get().setBitmapToShare(bitmapToShare);
                 //Pop intent
                 Intent in1 = new Intent(MainActivity.this, MyFacebookActivity.class);
                 //in1.putExtra("image", filename);
@@ -202,6 +200,7 @@ public class MainActivity extends AppCompatActivity {
 
         Bitmap bitmap = BitmapFactory.decodeFile(uriFile.getEncodedPath(), bmOptions);
         bitmapOriginal = bitmap;
+        BaseApplication.get().setBitmapToShare(bitmapOriginal);
         mImageView.setImageBitmap(bitmap);
     }
 
@@ -209,6 +208,7 @@ public class MainActivity extends AppCompatActivity {
         bitmapGrey = Bitmap.createBitmap(bitmapOriginal.getWidth(),
                 bitmapOriginal.getHeight(), Bitmap.Config.ALPHA_8);
         convertImageToGreyScale(bitmapOriginal, bitmapGrey);
+        BaseApplication.get().setBitmapToShare(bitmapGrey);
         mImageView.setImageBitmap(bitmapGrey);
     }
 
@@ -216,6 +216,8 @@ public class MainActivity extends AppCompatActivity {
         bitmapSepia = Bitmap.createBitmap(bitmapOriginal.getWidth(),
                 bitmapOriginal.getHeight(), Bitmap.Config.ARGB_8888);
         convertImageToSepia(bitmapOriginal, bitmapSepia);
+        BaseApplication.get().setBitmapToShare(bitmapSepia);
+
         mImageView.setImageBitmap(bitmapSepia);
     }
 
@@ -223,6 +225,7 @@ public class MainActivity extends AppCompatActivity {
         bitmapFrame = Bitmap.createBitmap(bitmapOriginal.getWidth(),
                 bitmapOriginal.getHeight(), Bitmap.Config.ARGB_8888);
         addFrameToImage(bitmapOriginal, bitmapFrame);
+        BaseApplication.get().setBitmapToShare(bitmapFrame);
         mImageView.setImageBitmap(bitmapFrame);
     }
 
@@ -230,6 +233,7 @@ public class MainActivity extends AppCompatActivity {
         bitmapSobel = Bitmap.createBitmap(bitmapOriginal.getWidth(),
                 bitmapOriginal.getHeight(), Bitmap.Config.ALPHA_8);
         convertImageToSobel(bitmapGrey, bitmapSobel);
+        BaseApplication.get().setBitmapToShare(bitmapSobel);
         mImageView.setImageBitmap(bitmapSobel);
     }
 
