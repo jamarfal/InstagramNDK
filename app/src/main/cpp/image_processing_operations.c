@@ -169,15 +169,80 @@ JNIEXPORT void JNICALL Java_com_jamarfal_instagramndk_MainActivity_convertImageT
 
 }
 
+JNIEXPORT void JNICALL Java_com_jamarfal_instagramndk_MainActivity_convertImageToGrey
+        (JNIEnv *env, jobject obj, jobject bitmapcolor, jobject bitmapgray) {
+    AndroidBitmapInfo infocolor;
+    void *pixelscolor;
+    AndroidBitmapInfo infogris;
+    void *pixelsgris;
+    int ret;
+    int y;
+    int x;
+    LOGI("convertirGrises");
+    if ((ret = AndroidBitmap_getInfo(env, bitmapcolor, &infocolor)) < 0) {
+        LOGE("AndroidBitmap_getInfo() failed ! error=%d", ret);
+        return;
+    }
+
+
+    if ((ret = AndroidBitmap_getInfo(env, bitmapgray, &infogris)) < 0) {
+        LOGE("AndroidBitmap_getInfo() failed ! error=%d", ret);
+        return;
+    }
+    LOGI("imagen color :: ancho %d;alto %d;avance %d;formato %d;flags %d", infocolor.width,
+         infocolor.height, infocolor.stride,
+         infocolor.format, infocolor.flags);
+    if (infocolor.format != ANDROID_BITMAP_FORMAT_RGBA_8888) {
+        LOGE("Bitmap no es formato RGBA_8888 !");
+        return;
+    }
+
+    LOGI("imagen color :: ancho %d;alto %d;avance %d;formato %d;flags %d",
+         infogris.width, infogris.height, infogris.stride,
+         infogris.format, infogris.flags);
+    if (infogris.format != ANDROID_BITMAP_FORMAT_RGBA_8888) {
+        LOGE("Bitmap no es formato RGBA_8888 !");
+        return;
+    }
+
+    if ((ret = AndroidBitmap_lockPixels(env, bitmapcolor, &pixelscolor))
+        < 0) {
+        LOGE("AndroidBitmap_lockPixels() failed ! error=%d", ret);
+    }
+
+
+    if ((ret = AndroidBitmap_lockPixels(env, bitmapgray, &pixelsgris)) < 0) {
+        LOGE("AndroidBitmap_lockPixels() fallo ! error=%d", ret);
+    }
+    // modificacion pixeles en el algoritmo de escala grises
+    for (y = 0; y < infocolor.height; y++) {
+        rgba *line = (rgba *) pixelscolor;
+        rgba *grisline = (rgba *) pixelsgris;
+        for (x = 0; x < infocolor.width; x++) {
+            float output = (line[x].red + line[x].green + line[x].blue) / 3;
+            if (output > 255) output = 255;
+            grisline[x].red = grisline[x].green = grisline[x].blue =
+                    (uint8_t) output;
+            grisline[x].alpha = line[x].alpha;
+        }
+        pixelscolor = (char *) pixelscolor + infocolor.stride;
+        pixelsgris = (char *) pixelsgris + infogris.stride;
+    }
+
+    LOGI("unlocking pixels");
+    AndroidBitmap_unlockPixels(env, bitmapcolor);
+    AndroidBitmap_unlockPixels(env, bitmapgray);
+}
+
 JNIEXPORT void JNICALL Java_com_jamarfal_instagramndk_MainActivity_convertImageToGreyScale
-        (JNIEnv * env, jobject  obj, jobject bitmapcolor,jobject bitmapgray) {
-    AndroidBitmapInfo  infocolor;
-    void*              pixelscolor;
-    AndroidBitmapInfo  infogray;
-    void*              pixelsgray;
-    int                ret;
-    int 			y;
-    int             x;
+        (JNIEnv *env, jobject obj, jobject bitmapcolor, jobject bitmapgray) {
+    AndroidBitmapInfo infocolor;
+    void *pixelscolor;
+    AndroidBitmapInfo infogray;
+    void *pixelsgray;
+    int ret;
+    int y;
+    int x;
 
 
     LOGI("convertToGray");
@@ -193,14 +258,16 @@ JNIEXPORT void JNICALL Java_com_jamarfal_instagramndk_MainActivity_convertImageT
     }
 
 
-    LOGI("color image :: width is %d; height is %d; stride is %d; format is %d;flags is %d",infocolor.width,infocolor.height,infocolor.stride,infocolor.format,infocolor.flags);
+    LOGI("color image :: width is %d; height is %d; stride is %d; format is %d;flags is %d",
+         infocolor.width, infocolor.height, infocolor.stride, infocolor.format, infocolor.flags);
     if (infocolor.format != ANDROID_BITMAP_FORMAT_RGBA_8888) {
         LOGE("Bitmap format is not RGBA_8888 !");
         return;
     }
 
 
-    LOGI("gray image :: width is %d; height is %d; stride is %d; format is %d;flags is %d",infogray.width,infogray.height,infogray.stride,infogray.format,infogray.flags);
+    LOGI("gray image :: width is %d; height is %d; stride is %d; format is %d;flags is %d",
+         infogray.width, infogray.height, infogray.stride, infogray.format, infogray.flags);
     if (infogray.format != ANDROID_BITMAP_FORMAT_A_8) {
         LOGE("Bitmap format is not A_8 !");
         return;
@@ -217,14 +284,14 @@ JNIEXPORT void JNICALL Java_com_jamarfal_instagramndk_MainActivity_convertImageT
 
     // modify pixels with image processing algorithm
 
-    for (y=0;y<infocolor.height;y++) {
-        rgba * line = (rgba *) pixelscolor;
-        uint8_t * grayline = (uint8_t *) pixelsgray;
-        for (x=0;x<infocolor.width;x++) {
-            grayline[x] = 0.3 * line[x].red + 0.59 * line[x].green + 0.11*line[x].blue;
+    for (y = 0; y < infocolor.height; y++) {
+        rgba *line = (rgba *) pixelscolor;
+        uint8_t *grayline = (uint8_t *) pixelsgray;
+        for (x = 0; x < infocolor.width; x++) {
+            grayline[x] = 0.3 * line[x].red + 0.59 * line[x].green + 0.11 * line[x].blue;
         }
 
-        pixelscolor = (char *)pixelscolor + infocolor.stride;
+        pixelscolor = (char *) pixelscolor + infocolor.stride;
         pixelsgray = (char *) pixelsgray + infogray.stride;
     }
 

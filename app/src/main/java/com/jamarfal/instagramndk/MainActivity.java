@@ -206,11 +206,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void convertGrey() {
         bitmapGrey = Bitmap.createBitmap(bitmapOriginal.getWidth(),
-                bitmapOriginal.getHeight(), Bitmap.Config.ALPHA_8);
-        convertImageToGreyScale(bitmapOriginal, bitmapGrey);
+                bitmapOriginal.getHeight(), Bitmap.Config.ARGB_8888);
+        convertImageToGrey(bitmapOriginal, bitmapGrey);
         BaseApplication.get().setBitmapToShare(bitmapGrey);
         mImageView.setImageBitmap(bitmapGrey);
     }
+
 
     private void convertSepia() {
         bitmapSepia = Bitmap.createBitmap(bitmapOriginal.getWidth(),
@@ -230,16 +231,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void convertSobel() {
+        bitmapGrey = Bitmap.createBitmap(bitmapOriginal.getWidth(),
+                bitmapOriginal.getHeight(), Bitmap.Config.ALPHA_8);
         bitmapSobel = Bitmap.createBitmap(bitmapOriginal.getWidth(),
                 bitmapOriginal.getHeight(), Bitmap.Config.ALPHA_8);
+        convertImageToGreyScale(bitmapOriginal, bitmapGrey);
         convertImageToSobel(bitmapGrey, bitmapSobel);
         BaseApplication.get().setBitmapToShare(bitmapSobel);
         mImageView.setImageBitmap(bitmapSobel);
+
     }
 
 
     //region Native functions
     public native void convertImageToGreyScale(Bitmap bitmapIn, Bitmap bitmapOut);
+
+    public native void convertImageToGrey(Bitmap bitmapIn, Bitmap bitmapOut);
 
     public native void convertImageToSepia(Bitmap bitmapIn, Bitmap bitmapOut);
 

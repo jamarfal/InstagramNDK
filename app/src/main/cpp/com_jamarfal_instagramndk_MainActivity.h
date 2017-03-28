@@ -19,6 +19,14 @@ JNIEXPORT void JNICALL Java_com_jamarfal_instagramndk_MainActivity_convertImageT
 
 /*
  * Class:     com_jamarfal_instagramndk_MainActivity
+ * Method:    convertImageToGrey
+ * Signature: (Landroid/graphics/Bitmap;Landroid/graphics/Bitmap;)V
+ */
+JNIEXPORT void JNICALL Java_com_jamarfal_instagramndk_MainActivity_convertImageToGrey
+  (JNIEnv *, jobject, jobject, jobject);
+
+/*
+ * Class:     com_jamarfal_instagramndk_MainActivity
  * Method:    convertImageToSepia
  * Signature: (Landroid/graphics/Bitmap;Landroid/graphics/Bitmap;)V
  */
